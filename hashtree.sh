@@ -53,15 +53,15 @@ function hashtree {
     # MAIN CHECKSUM CALL
     # note: option structure for sum functions must be identical to work
     if [ -d "$DIR" ]; then  # if $DIR directory exists
-      cd $DIR  # change to $DIR directory
-      # CHECK/COMPARE SUMS
+      cd $DIR  # change to head directory
       if [ "$CHECK" = true ]; then  # if -c or --check option specified
-        md5sum --check $OPTIONS $OUTPUT  # check MD5 sums in $OUTPUT file
-      # HASH FILES & STORE
+        # CHECK/COMPARE SUMS
+        $SUM_FUNC --check $OPTIONS $OUTPUT  # check MD5 sums in $OUTPUT file
       else
+        # HASH FILES & STORE
         # calculate hash for files in current dir & subdirs excl. $OUTPUT file
         # save result in $OUTPUT file
-        find . -type f ! -name "$OUTPUT" -exec md5sum $OPTIONS {} + > $OUTPUT
+        find . -type f ! -name "$OUTPUT" -exec $SUM_FUNC $OPTIONS {} + > $OUTPUT
       fi
       cd - > /dev/null  # change to previous directory
     else
