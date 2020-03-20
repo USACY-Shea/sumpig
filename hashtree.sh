@@ -1,5 +1,5 @@
-function hashtree {
-  HELP_STR="Usage: hashtree [OPTIONS] dir" #TODO: fill options
+function sumpig {
+  local HELP_STR="Usage: sumpig [OPTIONS] dir" #TODO: fill options
   if [ "$#" -lt 1 ]; then
     echo -e "At least one parameter is expected\n$HELP_STR"
   elif [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
@@ -13,6 +13,7 @@ function hashtree {
     local OPTIONS=""
 
     # GET ARGS
+    #TODO: argparse
     while [[ $# > 1 ]]; do
       local key="$1"
       case $key in
@@ -47,7 +48,7 @@ function hashtree {
     local DIR=$1  # head directory for HashTree
 
     if [ "$OUTPUT" = "" ]; then
-      OUTPUT="$SUM_TYPE_checksums"
+      OUTPUT="$(pwd)$SUM_TYPE.sumpig"
     fi
 
     # MAIN CHECKSUM CALL
@@ -61,6 +62,7 @@ function hashtree {
         # HASH FILES & STORE
         # calculate hash for files in current dir & subdirs excl. $OUTPUT file
         # save result in $OUTPUT file
+        echo -e "DBG1"
         find . -type f ! -name "$OUTPUT" -exec $SUM_FUNC $OPTIONS {} + > $OUTPUT
       fi
       cd - > /dev/null  # change to previous directory
