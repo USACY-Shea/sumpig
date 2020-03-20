@@ -1,11 +1,67 @@
 function sumpig {
   local HELP_STR="Usage: sumpig [OPTIONS] dir" #TODO: fill options
+  # if no args provided
+  if [[ $# -lt 1 ]]; then
+    echo -e "At least one parameter is expected\n$HELP_STR"
+  # if first arg is -h (catches edge case)
+  elif [[ $1 = "-h" ]] || [[ $1 = "--help" ]]; then
+    echo -e $HELP_STR
+  else
+    # INIT VARS
+    #TODO: dict of hash/functions
+    local VERBOSE=0
+    local 
+
+
+    # GET ARGS
+    while getopts "" opt; do  # getopts is util-linux specific
+        case "$opt" in
+        h|\?)  # help
+          show_help
+          return 0
+          ;;
+        m)  # md5 mode
+          ;;
+        s)  # sha256 mode
+          ;;
+        c)  # check
+          ;;
+        f)  # save filepath (output/check)
+          ;;
+        d)  # add tree head dir (multiple)
+          ;;
+        v)  # verbose (multiple)
+          if [[ $VERBOSE -ge 0 ]]; then
+            ((++VERBOSE))
+          fi
+          ;;
+        q)  # quiet (overrides verbose)
+          ((VERBOSE=-1))
+          ;;
+        esac
+    done
+
+    # MAIN CHECKSUM ROUTINE
+
+
+     # CHECK/COMPARE HASHES
+
+
+     # HASH FILES & STORE
+
+
+  fi
+}
+
+function sumpig {
+  local HELP_STR="Usage: sumpig [OPTIONS] dir" #TODO: fill options
   if [ "$#" -lt 1 ]; then
     echo -e "At least one parameter is expected\n$HELP_STR"
   elif [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
     echo -e $HELP_STR
   else
     # INIT VARS
+    #local CURRENT_DIR="$(pwd)"
     local OUTPUT=""
     local SUM_TYPE="md5"
     local SUM_FUNC="md5sum"
@@ -19,7 +75,7 @@ function sumpig {
       case $key in
         -h|--help)
           echo -e $HELP_STR
-          break  # exit function if -h used
+          return 0  # exit function if -h used
           ;;
         --md5|--md5sum)
           SUM_TYPE="md5"
@@ -48,7 +104,7 @@ function sumpig {
     local DIR=$1  # head directory for HashTree
 
     if [ "$OUTPUT" = "" ]; then
-      OUTPUT="$(pwd)$SUM_TYPE.sumpig"
+      OUTPUT="$(pwd)/$SUM_TYPE.sumpig"
     fi
 
     # MAIN CHECKSUM CALL
@@ -63,7 +119,7 @@ function sumpig {
         # calculate hash for files in current dir & subdirs excl. $OUTPUT file
         # save result in $OUTPUT file
         echo -e "DBG1"
-        find . -type f ! -name "$OUTPUT" -exec $SUM_FUNC $OPTIONS {} + > $OUTPUT
+        find . -type f ! -path "$OUTPUT" -exec $SUM_FUNC $OPTIONS {} + > $OUTPUT
       fi
       cd - > /dev/null  # change to previous directory
     else
