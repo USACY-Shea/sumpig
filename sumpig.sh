@@ -1,16 +1,21 @@
 function sumpig {
   local HELP_STR="Usage: sumpig [OPTIONS] dir" #TODO: fill options
   # if no args provided
-  if [[ $# -lt 1 ]]; then
+  if [[ $# -lt 1 ]]; then  #TODO: two params exp.
     echo -e "At least one parameter is expected\n$HELP_STR"
-  # if first arg is -h (catches edge case)
+  # if first arg is -h (catches edge case) #TODO: no flagless case, remove?
   elif [[ $1 = "-h" ]] || [[ $1 = "--help" ]]; then
     echo -e $HELP_STR
   else
     # INIT VARS
     #TODO: dict of hash/functions
+    local MODE=0    # 0          1
+    local HASH_NAME=("md5"      "sha256")
+    local HASH_FUNC=("md5sum"   "sha256sum")
+    local CHECK=false
+    local FILE=""
+    local DIRS=()
     local VERBOSE=0
-    local 
 
 
     # GET ARGS
@@ -21,14 +26,19 @@ function sumpig {
           return 0
           ;;
         m)  # md5 mode
+          MODE=0
           ;;
         s)  # sha256 mode
+          MODE=1
           ;;
         c)  # check
+          CHECK=true
           ;;
         f)  # save filepath (output/check)
           ;;
         d)  # add tree head dir (multiple)
+          ;;
+        i)  # add ignore dir (multiple)
           ;;
         v)  # verbose (multiple)
           if [[ $VERBOSE -ge 0 ]]; then
@@ -40,6 +50,8 @@ function sumpig {
           ;;
         esac
     done
+
+    # VALIDATE DIRS
 
     # MAIN CHECKSUM ROUTINE
 
