@@ -14,7 +14,8 @@ function sumpig {
     local HASH_FUNC=("md5sum"   "sha256sum")
     local CHECK=false
     local FILE=""
-    local DIRS=()
+    local SUM_DIRS=()
+    local IGN_DIRS=()
     local VERBOSE=0
 
 
@@ -35,13 +36,16 @@ function sumpig {
           CHECK=true
           ;;
         f)  # save filepath (output/check)
+          FILE=$(realpath $OPTARG)
           ;;
         d)  # add tree head dir (multiple)
+          SUM_DIRS+=$(realpath $OPTARG)
           ;;
         i)  # add ignore dir (multiple)
+          IGN_DIRS+=$(realpath $OPTARG)
           ;;
         v)  # verbose (multiple)
-          if [[ $VERBOSE -ge 0 ]]; then
+          if [[ $VERBOSE -ge 0 ]]; then  # skips if '-q' used
             ((++VERBOSE))
           fi
           ;;
