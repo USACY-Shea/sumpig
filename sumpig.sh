@@ -3,9 +3,6 @@ function sumpig {
   # if no args provided
   if [[ $# -lt 1 ]]; then  #TODO: two params exp.
     echo -e "At least one parameter is expected\n$HELP_STR"
-  # if first arg is -h (catches edge case) #TODO: no flagless case, remove?
-  elif [[ $1 = "-h" ]] || [[ $1 = "--help" ]]; then
-    echo -e $HELP_STR
   else
     # INIT VARS
     #TODO: dict of hash/functions
@@ -20,22 +17,27 @@ function sumpig {
 
 
     # GET ARGS
-    while getopts "" opt; do  # getopts is util-linux specific
-        case "$opt" in
+    while getopts '' OPTION; do  # getopts is util-linux specific
+        case "$OPTION" in
         h|\?)  # help
-          show_help
+          echo -e $HELP_STR
           return 0
           ;;
-        m)  # md5 mode
+        m)  # hash mode
+          #TODO: '-m' for 'mode' with OPTARG and check if in $HASH_NAME
+          #      set MODE to index of value in $HASH_NAME
+          #      print all from $HASH_NAME on error and exit
+          ;;
+        1)  # (TODO:remove) md5 mode
           MODE=0
           ;;
-        s)  # sha256 mode
+        2)  # (TODO:remove) sha256 mode
           MODE=1
           ;;
         c)  # check
           CHECK=true
           ;;
-        f)  # save filepath (output/check)
+        s)  # save filepath (output/check) #TODO: change flag, less common use
           FILE=$(realpath $OPTARG)
           ;;
         d)  # add tree head dir (multiple)
@@ -55,15 +57,15 @@ function sumpig {
         esac
     done
 
-    # VALIDATE DIRS
+    # VALIDATE SUM_DIRS/IGN_DIRS/(basedir FILE)
 
     # MAIN CHECKSUM ROUTINE
 
 
-     # CHECK/COMPARE HASHES
+      # CHECK/COMPARE HASHES
 
 
-     # HASH FILES & STORE
+      # HASH FILES & STORE
 
 
   fi
