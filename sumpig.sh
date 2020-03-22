@@ -6,18 +6,20 @@ function sumpig {
   else
     # INIT VARS
     #TODO: dict of hash/functions
-    local MODE=0    # 0          1
+    local MODE=-1   # 0          1
     local HASH_NAME=("md5"      "sha256")
     local HASH_FUNC=("md5sum"   "sha256sum")
-    local CHECK=false
+    local CHECK=""
     local FILE=""
     local SUM_DIRS=()
     local IGN_DIRS=()
     local VERBOSE=0
+    local DEBUG=false
 
 
     # GET ARGS
-    while getopts '' OPTION; do  # getopts is util-linux specific
+    OPTIND=1
+    while getopts 'h?m:12o:s:i:vqc:#' OPTION; do  # getopts is util-linux specific
         case "$OPTION" in
         h|\?)  # help
           echo -e $HELP_STR
@@ -27,6 +29,8 @@ function sumpig {
           #TODO: '-m' for 'mode' with OPTARG and check if in $HASH_NAME
           #      set MODE to index of value in $HASH_NAME
           #      print all from $HASH_NAME on error and exit
+          # if MODE -ne -1 error, "only one mode at a time" print all
+          # only used once (if [[ IDX -ne -1 ]]
           ;;
         1)  # (TODO:remove) md5 mode
           MODE=0
@@ -34,17 +38,15 @@ function sumpig {
         2)  # (TODO:remove) sha256 mode
           MODE=1
           ;;
-        c)  # check
-          CHECK=true
+        o)  # output filepath  #TODO: change flag? less common use
+          #TODO: store SUM_DIRS, IGN_DIRS, MODE at head of file
+          FILE="$(realpath $OPTARG)"
           ;;
-        s)  # save filepath (output/check) #TODO: change flag, less common use
-          FILE=$(realpath $OPTARG)
+        s)  # add tree head dir/file (multiple)
+          SUM_DIRS+=("$(realpath $OPTARG)")
           ;;
-        d)  # add tree head dir (multiple)
-          SUM_DIRS+=$(realpath $OPTARG)
-          ;;
-        i)  # add ignore dir (multiple)
-          IGN_DIRS+=$(realpath $OPTARG)
+        i)  # add ignore dir/file (multiple)
+          IGN_DIRS+=("$(realpath $OPTARG)")
           ;;
         v)  # verbose (multiple)
           if [[ $VERBOSE -ge 0 ]]; then  # skips if '-q' used
@@ -54,10 +56,30 @@ function sumpig {
         q)  # quiet (overrides verbose)
           ((VERBOSE=-1))
           ;;
+        c)  # check hashes
+          #TODO: if [[ "$CHECK" -ne "" ]] && [[ MODE -eq -1 ]]; #try to select mode from file header
+          CHECK="$OPTARG"
+          ;;
+        \#) # debug mode
+          DEBUG=true
+          ;;
         esac
     done
 
-    # VALIDATE SUM_DIRS/IGN_DIRS/(basedir FILE)
+    # DEBUG MODE
+    if [[ $DEBUG = true ]]; then
+      echo "MODE:     $MODE"
+      echo "CHECK:    $CHECK"
+      echo "FILE:     $FILE"
+      echo "SUM_DIRS: ${SUM_DIRS[@]}"
+      echo "IGN_DIRS: ${IGN_DIRS[@]}"
+      echo "VERBOSE:  $VERBOSE"
+    fi
+
+    # if [[ $MODE -eq -1 ]]; error out "must select a mode" print all
+
+    # VALIDATE SUM_DIRS/IGN_DIRS/safefile dir $(basedir FILE)
+      #TODO: default current dir if SUM_DIRS is empty
 
     # MAIN CHECKSUM ROUTINE
 
@@ -71,7 +93,7 @@ function sumpig {
   fi
 }
 
-function sumpig {
+function sumpiggy {
   local HELP_STR="Usage: sumpig [OPTIONS] dir" #TODO: fill options
   if [ "$#" -lt 1 ]; then
     echo -e "At least one parameter is expected\n$HELP_STR"
