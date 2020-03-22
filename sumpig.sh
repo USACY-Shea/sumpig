@@ -11,8 +11,8 @@ function sumpig {
     local OPTIONS=""
     local CHECK=""
     local FILE=""
-    local SUM_DIRS=()
-    local IGN_DIRS=()
+    local SUM_PATHS=()
+    local IGN_PATHS=()
     local VERBOSE=0
     local DEBUG=false
 
@@ -46,23 +46,23 @@ function sumpig {
           fi
           ;;
         o)  # hash options
-          if [[ "$OPTIONS" -ne "" ]]; then
+          if [[ "$OPTIONS" != "" ]]; then
             echo -e "$HELP_STR\nPass options as a single string enclosed in" \
-              "\"quotes\"\nex: -o \"-a -b 'cdef'  -OR-  -o '-a -b \"cdef\"" >&2
+              "\"quotes\"\nex: [-o \"-a -b '12 3'\"]  -OR-  [-o '-a -b \"12 3\"']" >&2
             return 1
           fi
           OPTIONS="$OPTARG"
           ;;
         f)  # output filepath
           #TODO: store "### DO NOT EDIT OR REMOVE THESE LINES ###" at head of file
-          #TODO: store $HASH_NAME[$MODE], SUM_DIRS, IGN_DIRS at head of file
+          #TODO: store $HASH_NAME[$MODE], SUM_PATHS, IGN_PATHS at head of file
           FILE="$(realpath $OPTARG)"
           ;;
-        s)  # add tree head dir/file (multiple)  #TODO: how to add multiple OPTARGs
-          SUM_DIRS+=("$(realpath $OPTARG)")
+        s)  # add target dir/file (multiple)  #TODO: how to add multiple OPTARGs
+          SUM_PATHS+=("$(realpath $OPTARG)")
           ;;
         i)  # add ignore dir/file (multiple)
-          IGN_DIRS+=("$(realpath $OPTARG)")
+          IGN_PATHS+=("$(realpath $OPTARG)")
           ;;
         v)  # verbose (multiple)
           if [[ $VERBOSE -ge 0 ]]; then  # skips if '-q' used
@@ -95,8 +95,8 @@ function sumpig {
       echo "OPTIONS:  $OPTIONS" >&2
       echo "CHECK:    $CHECK" >&2
       echo "FILE:     $FILE" >&2
-      echo "SUM_DIRS: ${SUM_DIRS[@]}" >&2
-      echo "IGN_DIRS: ${IGN_DIRS[@]}" >&2
+      echo "SUM_PATHS: ${SUM_PATHS[@]}" >&2
+      echo "IGN_PATHS: ${IGN_PATHS[@]}" >&2
       echo "VERBOSE:  $VERBOSE" >&2
     fi
 
@@ -104,15 +104,15 @@ function sumpig {
     #if [[ "$CHECK" -ne "" ]]; then
       #if [[ MODE -eq -1 ]]; then
         #try to select mode from file header
-      #SUM_DIRS=()
+      #SUM_PATHS=()
       #select DIRS from header
-      #IGN_DIRS=()
+      #IGN_PATHS=()
       #select DIRS from header
 
     # if [[ $MODE -eq -1 ]]; error out "must select a mode" print all (or default md5??)
 
-    # VALIDATE SUM_DIRS/IGN_DIRS/safefile dir $(basedir FILE)
-      #TODO: default current dir if SUM_DIRS is empty
+    # VALIDATE SUM_PATHS/IGN_PATHS/safefile dir $(basedir FILE)
+      #TODO: default current dir if SUM_PATHS is empty
 
     # MAIN CHECKSUM ROUTINE
 
