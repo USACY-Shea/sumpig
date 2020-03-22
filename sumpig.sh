@@ -2,7 +2,7 @@ function sumpig {
   local HELP_STR="Usage: sumpig [OPTIONS] dir" #TODO: fill options
   # if no args provided
   if [[ $# -lt 1 ]]; then  #TODO: two params exp.
-    echo -e "At least one parameter is expected\n$HELP_STR"
+    echo -e "At least one parameter is expected\n$HELP_STR" >&2
   else
     # INIT VARS
     #TODO: dict of hash/functions
@@ -19,10 +19,10 @@ function sumpig {
 
     # GET ARGS
     OPTIND=1
-    while getopts 'h?m:12o:s:i:vqc:#' OPTION; do  # getopts is util-linux specific
+    while getopts 'hm:12o:s:i:vqc:#' OPTION; do  # getopts is util-linux specific
         case "$OPTION" in
-        h|\?)  # help
-          echo -e $HELP_STR
+        h)  # help
+          echo -e $HELP_STR >&2
           return 0
           ;;
         m)  # hash mode
@@ -62,17 +62,25 @@ function sumpig {
         \#) # debug mode
           DEBUG=true
           ;;
+        :)
+          echo -e "$HELP_STR\nOption requires argument: -$OPTARG" >&2
+          return 1
+          ;;
+        \?)
+          echo -e "$HELP_STR\nInvalid option: -$OPTARG" >&2
+          return 1
+          ;;
         esac
     done
 
     # DEBUG MODE
     if [[ $DEBUG = true ]]; then
-      echo "MODE:     $MODE"
-      echo "CHECK:    $CHECK"
-      echo "FILE:     $FILE"
-      echo "SUM_DIRS: ${SUM_DIRS[@]}"
-      echo "IGN_DIRS: ${IGN_DIRS[@]}"
-      echo "VERBOSE:  $VERBOSE"
+      echo "MODE:     $MODE" >&2
+      echo "CHECK:    $CHECK" >&2
+      echo "FILE:     $FILE" >&2
+      echo "SUM_DIRS: ${SUM_DIRS[@]}" >&2
+      echo "IGN_DIRS: ${IGN_DIRS[@]}" >&2
+      echo "VERBOSE:  $VERBOSE" >&2
     fi
 
     #TODO:
