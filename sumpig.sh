@@ -19,7 +19,7 @@ function sumpig {
 
 
     # GET ARGS
-    #TODO: add mutex option logic (c||o/s/i)
+    #TODO: add mutex option logic (c||f/s/i)
     OPTIND=1
     while getopts 'hm:o:f:s:i:vqc:#' OPTION; do  # getopts is util-linux specific
         case "$OPTION" in
@@ -42,8 +42,8 @@ function sumpig {
           fi
           OPTIONS="$OPTARG"
           ;;
-        f)  # output filepath  #TODO: change flag? less common use
-          #TODO: store SUM_DIRS, IGN_DIRS, MODE at head of file
+        f)  # output filepath
+          #TODO: store $HASH_NAME[$MODE] at head of file
           FILE="$(realpath $OPTARG)"
           ;;
         s)  # add tree head dir/file (multiple)
@@ -79,7 +79,7 @@ function sumpig {
 
     # DEBUG MODE
     if [[ $DEBUG = true ]]; then
-      echo "MODE:     $MODE" >&2
+      echo "MODE:     $MODE (${HASH_NAME[$MODE]})" >&2
       echo "OPTIONS:  $OPTIONS" >&2
       echo "CHECK:    $CHECK" >&2
       echo "FILE:     $FILE" >&2
