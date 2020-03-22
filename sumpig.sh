@@ -2,10 +2,9 @@ function sumpig {
   local HELP_STR="Usage: sumpig [OPTIONS] dir" #TODO: fill options
   # if no args provided
   if [[ $# -lt 1 ]]; then  #TODO: two params exp.
-    echo -e "At least one parameter is expected\n$HELP_STR" >&2
+    echo -e "$HELP_STR\nAt least one parameter is expected" >&2
   else
     # INIT VARS
-    #TODO: dict of hash/functions
     local MODE=-1   # 0          1
     local HASH_NAME=("md5"      "sha256")
     local HASH_FUNC=("md5sum"   "sha256sum")
@@ -16,6 +15,9 @@ function sumpig {
     local IGN_DIRS=()
     local VERBOSE=0
     local DEBUG=false
+
+
+    #TODO: add "long opts", esp for md5/sha256 (swap for "-m md5")
 
 
     # GET ARGS
@@ -45,17 +47,18 @@ function sumpig {
           ;;
         o)  # hash options
           if [[ "$OPTIONS" -ne "" ]]; then
-            echo -e "Pass options as a single string enclosed in" \
+            echo -e "$HELP_STR\nPass options as a single string enclosed in" \
               "\"quotes\"\nex: -o \"-a -b 'cdef'  -OR-  -o '-a -b \"cdef\"" >&2
             return 1
           fi
           OPTIONS="$OPTARG"
           ;;
         f)  # output filepath
-          #TODO: store $HASH_NAME[$MODE] at head of file
+          #TODO: store "### DO NOT EDIT OR REMOVE THESE LINES ###" at head of file
+          #TODO: store $HASH_NAME[$MODE], SUM_DIRS, IGN_DIRS at head of file
           FILE="$(realpath $OPTARG)"
           ;;
-        s)  # add tree head dir/file (multiple)
+        s)  # add tree head dir/file (multiple)  #TODO: how to add multiple OPTARGs
           SUM_DIRS+=("$(realpath $OPTARG)")
           ;;
         i)  # add ignore dir/file (multiple)
@@ -99,14 +102,14 @@ function sumpig {
 
     #TODO:
     #if [[ "$CHECK" -ne "" ]]; then
-      #[[ MODE -eq -1 ]]; then
+      #if [[ MODE -eq -1 ]]; then
         #try to select mode from file header
       #SUM_DIRS=()
       #select DIRS from header
       #IGN_DIRS=()
       #select DIRS from header
 
-    # if [[ $MODE -eq -1 ]]; error out "must select a mode" print all
+    # if [[ $MODE -eq -1 ]]; error out "must select a mode" print all (or default md5??)
 
     # VALIDATE SUM_DIRS/IGN_DIRS/safefile dir $(basedir FILE)
       #TODO: default current dir if SUM_DIRS is empty
