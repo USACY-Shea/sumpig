@@ -28,11 +28,20 @@ function sumpig {
           return 0
           ;;
         m)  # hash mode
-          #TODO: '-m' for 'mode' with OPTARG and check if in $HASH_NAME
-          #      set MODE to index of value in $HASH_NAME
-          #      print all from $HASH_NAME on error and exit
-          # if MODE -ne -1 error, "only one mode at a time" print all
-          # only used once (if [[ IDX -ne -1 ]]
+          if [[ $MODE -ne -1 ]]; then  # duplicate option error
+            echo -e "$HELP_STR\nOnly one mode (-m) can be set" >&2
+            return 1
+          fi
+          # find OPTARG in HASH_NAMEs, store index in MODE
+          MODE=-1
+          for i in "${!HASH_NAME[@]}"; do  # create list of indices
+            # cmp val and break if found
+            [[ "${HASH_NAME[$i]}" = "$OPTARG" ]] && MODE=$i && break
+          done;
+          if [[ $MODE -eq -1 ]]; then  # invalid mode error
+            echo -e "$HELP_STR\nInvalid hash mode '$OPTARG'\nSelect from: ${HASH_NAME[@]}" >&2
+            return 1
+          fi
           ;;
         o)  # hash options
           if [[ "$OPTIONS" -ne "" ]]; then
