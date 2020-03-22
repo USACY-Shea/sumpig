@@ -57,7 +57,6 @@ function sumpig {
           ((VERBOSE=-1))
           ;;
         c)  # check hashes
-          #TODO: if [[ "$CHECK" -ne "" ]] && [[ MODE -eq -1 ]]; #try to select mode from file header
           CHECK="$OPTARG"
           ;;
         \#) # debug mode
@@ -75,6 +74,15 @@ function sumpig {
       echo "IGN_DIRS: ${IGN_DIRS[@]}"
       echo "VERBOSE:  $VERBOSE"
     fi
+
+    #TODO:
+    #if [[ "$CHECK" -ne "" ]]; then
+      #[[ MODE -eq -1 ]]; then
+        #try to select mode from file header
+      #SUM_DIRS=()
+      #select DIRS from header
+      #IGN_DIRS=()
+      #select DIRS from header
 
     # if [[ $MODE -eq -1 ]]; error out "must select a mode" print all
 
