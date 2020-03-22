@@ -9,6 +9,7 @@ function sumpig {
     local MODE=-1   # 0          1
     local HASH_NAME=("md5"      "sha256")
     local HASH_FUNC=("md5sum"   "sha256sum")
+    local OPTIONS=""
     local CHECK=""
     local FILE=""
     local SUM_DIRS=()
@@ -18,11 +19,12 @@ function sumpig {
 
 
     # GET ARGS
+    #TODO: add mutex option logic (c||o/s/i)
     OPTIND=1
-    while getopts 'hm:12o:s:i:vqc:#' OPTION; do  # getopts is util-linux specific
+    while getopts 'hm:o:f:s:i:vqc:#' OPTION; do  # getopts is util-linux specific
         case "$OPTION" in
         h)  # help
-          echo -e $HELP_STR >&2
+          echo -e "$HELP_STR" >&2
           return 0
           ;;
         m)  # hash mode
@@ -32,13 +34,15 @@ function sumpig {
           # if MODE -ne -1 error, "only one mode at a time" print all
           # only used once (if [[ IDX -ne -1 ]]
           ;;
-        1)  # (TODO:remove) md5 mode
-          MODE=0
+        o)  # hash options
+          if [[ "$OPTIONS" -ne "" ]]; then
+            echo -e "Pass options as a single string enclosed in" \
+              "\"quotes\"\nex: -o \"-a -b 'cdef'  -OR-  -o '-a -b \"cdef\"" >&2
+            return 1
+          fi
+          OPTIONS="$OPTARG"
           ;;
-        2)  # (TODO:remove) sha256 mode
-          MODE=1
-          ;;
-        o)  # output filepath  #TODO: change flag? less common use
+        f)  # output filepath  #TODO: change flag? less common use
           #TODO: store SUM_DIRS, IGN_DIRS, MODE at head of file
           FILE="$(realpath $OPTARG)"
           ;;
@@ -62,11 +66,11 @@ function sumpig {
         \#) # debug mode
           DEBUG=true
           ;;
-        :)
+        :)  # error: missing argument
           echo -e "$HELP_STR\nOption requires argument: -$OPTARG" >&2
           return 1
           ;;
-        \?)
+        \?) # error: invalid argument
           echo -e "$HELP_STR\nInvalid option: -$OPTARG" >&2
           return 1
           ;;
@@ -76,6 +80,7 @@ function sumpig {
     # DEBUG MODE
     if [[ $DEBUG = true ]]; then
       echo "MODE:     $MODE" >&2
+      echo "OPTIONS:  $OPTIONS" >&2
       echo "CHECK:    $CHECK" >&2
       echo "FILE:     $FILE" >&2
       echo "SUM_DIRS: ${SUM_DIRS[@]}" >&2
