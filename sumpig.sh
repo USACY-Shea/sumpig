@@ -8,7 +8,7 @@ function __join_by {
 
 
 function sumpig {
-  local HELP_STR="Usage: sumpig [OPTIONS] dir" #TODO: fill options
+  local HELP_STR="Usage: sumpig [[-m (md5|sha256)] [[-s PATH]...] [-f PATH]] | [-c PATH] [-o \"OPTIONS\"]" #TODO: fill options
   if [[ $# -lt 1 ]]; then # if no args provided  #TODO: X params expected
     echo -e "$HELP_STR\nAt least one parameter is expected" >&2
     return 1
@@ -70,11 +70,14 @@ function sumpig {
       ;;
     s)  # add target dir/file (multiple)  #TODO: how to add multiple OPTARGs
       # this option is ignored if '-c' is used
+      #TODO: currently can't handle spaces in dirs
+      #TODO: test with file endpoints
       SUM_PATHS+=($(realpath $OPTARG))
       ;;
     i)  # add ignore dir/file (multiple)
       # this option is ignored if '-c' is used
       #IGN_PATHS+=("$(realpath $OPTARG)")
+      #TODO: try single quotes??
       IGN_PATHS=()  #TODO: doesn't function properly, feature temp. cut
       ;;
     v)  # verbose (multiple)
