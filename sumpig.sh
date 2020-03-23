@@ -25,6 +25,7 @@ function sumpig {
   local OUTPUT=""
   local SUM_PATHS=()
   local IGN_PATHS=()
+  #TODO: currently unused; use to determine what will print (to stderr)
   local VERBOSE=0
   local DEBUG=false
 
@@ -62,12 +63,7 @@ function sumpig {
       fi
       ;;
     o)  # hash options
-      if [[ "$OPTIONS" -ne "" ]]; then
-        echo -e "$HELP_STR\nPass options as a single string enclosed in" \
-          "\"quotes\"\nex: [-o \"-a -b '12 3'\"]  -OR-  [-o '-a -b \"12 3\"']" >&2
-        return 1
-      fi
-      OPTIONS="$OPTARG"
+      OPTIONS+=" $OPTARG"
       ;;
     f)  # output filepath
       # this option is ignored if '-c' is used
@@ -80,7 +76,7 @@ function sumpig {
     i)  # add ignore dir/file (multiple)
       # this option is ignored if '-c' is used
       #IGN_PATHS+=("$(realpath $OPTARG)")
-      IGN_PATHS=()  #TODO: doesn't function properly
+      IGN_PATHS=()  #TODO: doesn't function properly, feature temp. cut
       ;;
     v)  # verbose (multiple)
       if [[ $VERBOSE -ge 0 ]]; then  # skips if '-q' used
@@ -105,7 +101,7 @@ function sumpig {
   done
 
   # DEBUG MODE (show vars)
-  if [[ $DEBUG -eq true ]]; then
+  if [[ $DEBUG = true ]]; then
     echo "MODE:      $MODE (${HASH_NAME[$MODE]})" >&2
     echo "OPTIONS:   $OPTIONS" >&2
     echo "CHECK:     $CHECK" >&2
@@ -127,11 +123,6 @@ function sumpig {
       #if fails print error and exit
       pass #TODO:rm
     fi
-    #SUM_PATHS=()
-    #select DIRS from header
-    #IGN_PATHS=()
-    #select DIRS from header
-
     # CHECK/COMPARE HASHES
     ${HASH_FUNC[$MODE]} --check $OPTIONS $CHECK  # check hashes in $CHECK file
 
@@ -145,6 +136,7 @@ function sumpig {
     # VALIDATE SUM_PATHs/IGN_PATHs
       #TODO: default current dir if SUM_PATHS is empty??
 
+    #TODO: set default $OUTPUT
 
     # HASH FILES & STORE
     # MAIN CHECKSUM CALL
@@ -163,27 +155,19 @@ function sumpig {
     done
 
     # DEBUG MODE (show formatted paths)
-    if [[ $DEBUG -eq true ]]; then
-      echo -e "\nIGN_PATHS (formatted):\n${FMT_IGN_PATHS[@]}" >&2
-      echo -e "\nSUM_PATHS (formatted):\n${FMT_SUM_PATHS[@]}" >&2
-    fi
-      #TODO: store "### DO NOT EDIT OR REMOVE THESE LINES ###" at head of file
-      #TODO: store $HASH_NAME[$MODE], SUM_PATHS, IGN_PATHS at head of file
+#    if [[ $DEBUG -eq true ]]; then
+#      echo -e "\nIGN_PATHS (formatted):\n${FMT_IGN_PATHS[@]}" >&2
+#      echo -e "\nSUM_PATHS (formatted):\n${FMT_SUM_PATHS[@]}" >&2
+#    fi
 
-    # set header string
-    #local HEADER_STR="### DO NOT EDIT OR REMOVE THESE LINES ###\n### Hash Type:    ${HASH_NAME[$MODE]}\n### Hashed Paths: ${SUM_PATHS[@]}\n### Ignore Paths: ${IGN_PATHS[@]}\n"
 
     # add file header
-    #echo -e $HEADER_STR > $OUTPUT
     echo -e "### DO NOT EDIT OR REMOVE THESE LINES ###\n### Hash Type: ${HASH_NAME[$MODE]}\n### Hashed Paths: ${SUM_PATHS[@]}\n### Ignore Paths: ${IGN_PATHS[@]}" > $OUTPUT
-    # calculate hash for files in current dir & subdirs excl. $OUTPUT file
-    # save result in $OUTPUT file
+
     if [[ $DEBUG -eq true ]]; then
       local asdf=0 # echo -e Hash CLI:\nfind $(${FMT_SUM_PATHS[@]}) -type f ! -path "$OUTPUT" ${FMT_IGN_PATHS[@]} -exec ${HASH_FUNC[$MODE]} $OPTIONS {} + \>\> $OUTPUT \n\n
     fi
-    #find ${FMT_SUM_PATHS[@]} -type f ! -path "$OUTPUT" ${FMT_IGN_PATHS[@]} -exec ${HASH_FUNC[$MODE]} $OPTIONS {} +
-    echo DBG ${SUM_PATHS[@]}
+    # calculate hash and save in $OUTPUT
     find ${SUM_PATHS[@]} -type f ! -path "$OUTPUT" ${FMT_IGN_PATHS[@]} -exec ${HASH_FUNC[$MODE]} $OPTIONS {} + >> $OUTPUT
-    # >> $OUTPUT
   fi
 }
