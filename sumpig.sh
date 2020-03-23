@@ -118,7 +118,7 @@ function sumpig {
 
   #TODO:
   # CHECK ROUTINEMAIN
-  if [[ "$CHECK" -ne "" ]]; then
+  if [[ "$CHECK" != "" ]]; then
     # AUTOSELECT HASH MODE
     if [[ $MODE -eq -1 ]]; then
       #echo -e "Trying to determine hash mode from file..." >&2
@@ -174,7 +174,7 @@ function sumpig {
 
     # add file header
     #echo -e $HEADER_STR > $OUTPUT
-    echo -e "### DO NOT EDIT OR REMOVE THESE LINES ###\n### Hash Type: ${HASH_NAME[$MODE]}\n### Hashed Paths: ${SUM_PATHS[@]}\n### Ignore Paths: ${IGN_PATHS[@]}\n" > $OUTPUT
+    echo -e "### DO NOT EDIT OR REMOVE THESE LINES ###\n### Hash Type: ${HASH_NAME[$MODE]}\n### Hashed Paths: ${SUM_PATHS[@]}\n### Ignore Paths: ${IGN_PATHS[@]}" > $OUTPUT
     # calculate hash for files in current dir & subdirs excl. $OUTPUT file
     # save result in $OUTPUT file
     if [[ $DEBUG -eq true ]]; then
