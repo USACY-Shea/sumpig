@@ -9,8 +9,7 @@ function __join_by {
 
 function sumpig {
   local HELP_STR="Usage: sumpig [OPTIONS] dir" #TODO: fill options
-  # if no args provided
-  if [[ $# -lt 1 ]]; then  #TODO: X params expected
+  if [[ $# -lt 1 ]]; then # if no args provided  #TODO: X params expected
     echo -e "$HELP_STR\nAt least one parameter is expected" >&2
     return 1
   fi
@@ -121,7 +120,8 @@ function sumpig {
       #echo -e "Trying to determine hash mode from file..." >&2
       #try to select mode from file header
       #if fails print error and exit
-      pass #TODO:rm
+      echo -e "$HELP_STR\nSelect a hash mode: ${HASH_NAME[@]}" >&2 #TODO:rm
+      return 1 #TODO:rm
     fi
     # CHECK/COMPARE HASHES
     ${HASH_FUNC[$MODE]} --check $OPTIONS $CHECK  # check hashes in $CHECK file
@@ -142,12 +142,14 @@ function sumpig {
     # MAIN CHECKSUM CALL
     # note: option structure for sum functions must be identical to work
 
+    #TODO: possibly rm?? assess
     # format IGN_PATHS
     local FMT_IGN_PATHS=()
     for _PATH in ${IGN_PATHS[@]}; do
       FMT_IGN_PATHS+=("! -path \"$_PATH\*\"")
     done
 
+    #TODO: possibly rm?? assess
     # format SUM_PATHS
     local FMT_SUM_PATHS=()
     for _PATH in ${SUM_PATHS[@]}; do
@@ -159,7 +161,6 @@ function sumpig {
 #      echo -e "\nIGN_PATHS (formatted):\n${FMT_IGN_PATHS[@]}" >&2
 #      echo -e "\nSUM_PATHS (formatted):\n${FMT_SUM_PATHS[@]}" >&2
 #    fi
-
 
     # add file header
     echo -e "### DO NOT EDIT OR REMOVE THESE LINES ###\n### Hash Type: ${HASH_NAME[$MODE]}\n### Hashed Paths: ${SUM_PATHS[@]}\n### Ignore Paths: ${IGN_PATHS[@]}" > $OUTPUT
