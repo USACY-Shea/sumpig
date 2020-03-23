@@ -35,7 +35,8 @@ function sumpig {
   # GET ARGS
   #TODO: add mutex option logic (c||f/s/i)
   OPTIND=1
-  while getopts 'hm:o:f:s:i:vqc:#' OPTION; do  # getopts is util-linux specific
+  while getopts 'hm:o:f:s:vqc:#' OPTION; do  # getopts is util-linux specific
+    #TODO: add 'i:' back to opts for ignore
     case "$OPTION" in
     \#) # debug mode
       DEBUG=true
