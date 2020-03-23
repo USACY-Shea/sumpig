@@ -131,7 +131,7 @@ function sumpig {
     #select DIRS from header
 
     # CHECK/COMPARE HASHES
-        $SUM_FUNC --check $OPTIONS $OUTPUT  # check MD5 sums in $OUTPUT file
+    $SUM_FUNC --check $OPTIONS $OUTPUT  # check MD5 sums in $OUTPUT file
 
   # HASH ROUTINE
   else
@@ -177,8 +177,9 @@ function sumpig {
     # calculate hash for files in current dir & subdirs excl. $OUTPUT file
     # save result in $OUTPUT file
     if [[ $DEBUG -eq true ]]; then
-      echo -e "\nHash CLI:\nfind "${FMT_SUM_PATHS[@]}" -type f ! -path "$OUTPUT" ${FMT_IGN_PATHS[@]} -exec $SUM_FUNC $OPTIONS {} + >> $OUTPUT\n"
+      echo -e "\nHash CLI:\nfind ${FMT_SUM_PATHS[@]} -type f ! -path \"$OUTPUT\" ${FMT_IGN_PATHS[@]} -exec $SUM_FUNC $OPTIONS {} + >> $OUTPUT\n"
     fi
-    find ${SUM_PATHS[@]} -type f ! -path "$OUTPUT" ${FMT_IGN_PATHS[@]} -exec $SUM_FUNC $OPTIONS {} + >> $OUTPUT
+    find ${FMT_SUM_PATHS[@]} -type f ! -path "$OUTPUT" ${FMT_IGN_PATHS[@]} -exec $SUM_FUNC $OPTIONS {} +
+    # >> $OUTPUT
   fi
 }
