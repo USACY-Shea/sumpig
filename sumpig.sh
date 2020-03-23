@@ -37,6 +37,9 @@ function sumpig {
   OPTIND=1
   while getopts 'hm:o:f:s:i:vqc:#' OPTION; do  # getopts is util-linux specific
     case "$OPTION" in
+    \#) # debug mode
+      DEBUG=true
+      ;;
     h)  # help
       echo -e "$HELP_STR" >&2
       return 0
@@ -71,11 +74,12 @@ function sumpig {
       ;;
     s)  # add target dir/file (multiple)  #TODO: how to add multiple OPTARGs
       # this option is ignored if '-c' is used
-      SUM_PATHS+=("$(realpath $OPTARG)")
+      SUM_PATHS+=($(realpath $OPTARG))
       ;;
     i)  # add ignore dir/file (multiple)
       # this option is ignored if '-c' is used
-      IGN_PATHS+=("$(realpath $OPTARG)")
+      #IGN_PATHS+=("$(realpath $OPTARG)")
+      IGN_PATHS=()  #TODO: doesn't function properly
       ;;
     v)  # verbose (multiple)
       if [[ $VERBOSE -ge 0 ]]; then  # skips if '-q' used
@@ -87,9 +91,6 @@ function sumpig {
       ;;
     c)  # check hashes
       CHECK="$OPTARG"
-      ;;
-    \#) # debug mode
-      DEBUG=true
       ;;
     :)  # error: missing argument
       echo -e "$HELP_STR\nOption requires argument: -$OPTARG" >&2
@@ -131,7 +132,7 @@ function sumpig {
     #select DIRS from header
 
     # CHECK/COMPARE HASHES
-    $SUM_FUNC --check $OPTIONS $OUTPUT  # check MD5 sums in $OUTPUT file
+    ${HASH_FUNC[$MODE]} --check $OPTIONS $CHECK  # check hashes in $CHECK file
 
   # HASH ROUTINE
   else
@@ -151,7 +152,7 @@ function sumpig {
     # format IGN_PATHS
     local FMT_IGN_PATHS=()
     for _PATH in ${IGN_PATHS[@]}; do
-      FMT_IGN_PATHS+=("! -path \"$_PATH\"")
+      FMT_IGN_PATHS+=("! -path \"$_PATH\*\"")
     done
 
     # format SUM_PATHS
@@ -177,9 +178,11 @@ function sumpig {
     # calculate hash for files in current dir & subdirs excl. $OUTPUT file
     # save result in $OUTPUT file
     if [[ $DEBUG -eq true ]]; then
-      echo -e "\nHash CLI:\nfind ${FMT_SUM_PATHS[@]} -type f ! -path \"$OUTPUT\" ${FMT_IGN_PATHS[@]} -exec $SUM_FUNC $OPTIONS {} + >> $OUTPUT\n"
+      local asdf=0 # echo -e Hash CLI:\nfind $(${FMT_SUM_PATHS[@]}) -type f ! -path "$OUTPUT" ${FMT_IGN_PATHS[@]} -exec ${HASH_FUNC[$MODE]} $OPTIONS {} + \>\> $OUTPUT \n\n
     fi
-    find ${FMT_SUM_PATHS[@]} -type f ! -path "$OUTPUT" ${FMT_IGN_PATHS[@]} -exec $SUM_FUNC $OPTIONS {} +
+    #find ${FMT_SUM_PATHS[@]} -type f ! -path "$OUTPUT" ${FMT_IGN_PATHS[@]} -exec ${HASH_FUNC[$MODE]} $OPTIONS {} +
+    echo DBG ${SUM_PATHS[@]}
+    find ${SUM_PATHS[@]} -type f ! -path "$OUTPUT" ${FMT_IGN_PATHS[@]} -exec ${HASH_FUNC[$MODE]} $OPTIONS {} + >> $OUTPUT
     # >> $OUTPUT
   fi
 }
