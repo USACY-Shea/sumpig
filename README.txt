@@ -22,3 +22,6 @@ Options:
               mode, this file will be overwritten.
 
   -c PATH     Check the stored paths and hashes at PATH for any changes in data.
+
+Example use:
+  $ sumpig -s /home/user/Documents -s /usr/sbin -m sha256 -f ./hashes.sha256
