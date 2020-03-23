@@ -24,4 +24,5 @@ Options:
   -c PATH     Check the stored paths and hashes at PATH for any changes in data.
 
 Example use:
-  $ sumpig -s /home/user/Documents -s /usr/sbin -m sha256 -f ./hashes.sha256
+  $ sumpig -m sha256 -s /home/user/Documents -s /usr/sbin -f ./hashes.sha256
+  $ sumpig -m sha256 -c ./hashes.sha256
